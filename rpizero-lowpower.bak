@@ -22,14 +22,15 @@ F 0 "U1" H 1650 5700 50  0000 C CNN
 F 1 "ATtiny1604-SS" H 2450 4400 50  0000 C CNN
 F 2 "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm" H 2100 5050 50  0001 C CIN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny804_1604-Data-Sheet-40002028A.pdf" H 2100 5050 50  0001 C CNN
+F 4 "579-ATTINY1604-SSNR" H 2100 5050 50  0001 C CNN "Vendor"
 	1    2100 5050
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Raspberry_Pi_2_3 J3
+L Connector:Raspberry_Pi_2_3 #J3
 U 1 1 5D146BB8
 P 4800 5650
-F 0 "J3" H 4150 6900 50  0000 C CNN
+F 0 "#J3" H 4150 6900 50  0000 C CNN
 F 1 "Raspberry_Pi_2_3" H 5500 4400 50  0000 C CNN
 F 2 "myparts:Raspberry_Pi_Zero_Socketed_THT_FaceDown_MountingHoles_no_court" H 4800 5650 50  0001 C CNN
 F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 4800 5650 50  0001 C CNN
@@ -37,10 +38,10 @@ F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/r
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector_Generic:Conn_01x06 J2
+L Connector_Generic:Conn_01x06 #J2
 U 1 1 5D14A35B
 P 10050 1550
-F 0 "J2" H 10130 1542 50  0000 L CNN
+F 0 "#J2" H 10130 1542 50  0000 L CNN
 F 1 "Screw_Terminal_01x04" H 10130 1451 50  0001 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 10050 1550 50  0001 C CNN
 F 3 "~" H 10050 1550 50  0001 C CNN
@@ -48,10 +49,10 @@ F 3 "~" H 10050 1550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Battery_Cell BT1
+L Device:Battery_Cell #BT1
 U 1 1 5D14FB64
 P 1450 1550
-F 0 "BT1" H 1568 1646 50  0000 L CNN
+F 0 "#BT1" H 1568 1646 50  0000 L CNN
 F 1 "3V7" H 1568 1555 50  0000 L CNN
 F 2 "myparts:18650-ebay" V 1450 1610 50  0001 C CNN
 F 3 "~" V 1450 1610 50  0001 C CNN
@@ -59,10 +60,10 @@ F 3 "~" V 1450 1610 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector_Generic:Conn_01x06 J1
+L Connector_Generic:Conn_01x06 #J1
 U 1 1 5D1645FC
 P 10050 3850
-F 0 "J1" H 10130 3842 50  0000 L CNN
+F 0 "#J1" H 10130 3842 50  0000 L CNN
 F 1 "Screw_Terminal_01x06" H 10130 3751 50  0001 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 10050 3850 50  0001 C CNN
 F 3 "~" H 10050 3850 50  0001 C CNN
@@ -77,6 +78,7 @@ F 0 "D1" V 2339 6483 50  0000 R CNN
 F 1 "LED" V 2248 6483 50  0000 R CNN
 F 2 "LED_SMD:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2300 6600 50  0001 C CNN
 F 3 "~" H 2300 6600 50  0001 C CNN
+F 4 "607-CMDA5AR7D1S" H 2300 6600 50  0001 C CNN "Vendor"
 	1    2300 6600
 	0    -1   -1   0   
 $EndComp
@@ -195,6 +197,7 @@ F 0 "R1" H 2520 1746 50  0000 L CNN
 F 1 "10k" H 2520 1655 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2520 1609 50  0001 L CNN
 F 3 "~" H 2450 1700 50  0001 C CNN
+F 4 "603-RT0805FRE0710KL" H 2450 1700 50  0001 C CNN "Vendor"
 	1    2450 1700
 	1    0    0    -1  
 $EndComp
@@ -302,6 +305,7 @@ F 0 "R2" H 2370 6946 50  0000 L CNN
 F 1 "1k" H 2370 6855 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2370 6809 50  0001 L CNN
 F 3 "~" H 2300 6900 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 2300 6900 50  0001 C CNN "Vendor"
 	1    2300 6900
 	1    0    0    -1  
 $EndComp
@@ -341,9 +345,11 @@ L Device:R R3
 U 1 1 5D1EC0C7
 P 5750 4650
 F 0 "R3" H 5820 4696 50  0000 L CNN
-F 1 "4k7" H 5820 4605 50  0000 L CNN
+F 1 "10k" H 5820 4605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 5820 4559 50  0001 L CNN
 F 3 "~" H 5750 4650 50  0001 C CNN
+F 4 "2073784" H 5750 4650 50  0001 C CNN "Ref"
+F 5 "603-RT0805FRE0710KL" H 5750 4650 50  0001 C CNN "Vendor"
 	1    5750 4650
 	1    0    0    -1  
 $EndComp
@@ -363,9 +369,11 @@ L Device:R R4
 U 1 1 5D1F0819
 P 6050 4650
 F 0 "R4" H 6120 4696 50  0000 L CNN
-F 1 "4k7" H 6120 4605 50  0000 L CNN
+F 1 "10k" H 6120 4605 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 6120 4559 50  0001 L CNN
 F 3 "~" H 6050 4650 50  0001 C CNN
+F 4 "2073784" H 6050 4650 50  0001 C CNN "Ref"
+F 5 "603-RT0805FRE0710KL" H 6050 4650 50  0001 C CNN "Vendor"
 	1    6050 4650
 	1    0    0    -1  
 $EndComp
@@ -423,6 +431,7 @@ F 0 "C1" H 2915 2846 50  0000 L CNN
 F 1 "100n" H 2915 2755 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2838 2650 50  0001 C CNN
 F 3 "~" H 2800 2800 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 2800 2800 50  0001 C CNN "Vendor"
 	1    2800 2800
 	1    0    0    -1  
 $EndComp
@@ -457,6 +466,7 @@ F 0 "C2" H 3215 6946 50  0000 L CNN
 F 1 "100n" H 3215 6855 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3138 6750 50  0001 C CNN
 F 3 "~" H 3100 6900 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 3100 6900 50  0001 C CNN "Vendor"
 	1    3100 6900
 	1    0    0    -1  
 $EndComp
@@ -476,9 +486,10 @@ L Device:C C7
 U 1 1 5D2EE758
 P 8850 4400
 F 0 "C7" H 8965 4446 50  0000 L CNN
-F 1 "1u" H 8965 4355 50  0000 L CNN
+F 1 "100n" H 8965 4355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8888 4250 50  0001 C CNN
 F 3 "~" H 8850 4400 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 8850 4400 50  0001 C CNN "Vendor"
 	1    8850 4400
 	1    0    0    -1  
 $EndComp
@@ -490,6 +501,7 @@ F 0 "R11" V 8793 3850 50  0000 C CNN
 F 1 "1k" V 8884 3850 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 9070 3759 50  0001 L CNN
 F 3 "~" H 9000 3850 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 9000 3850 50  0001 C CNN "Vendor"
 	1    9000 3850
 	0    1    1    0   
 $EndComp
@@ -501,6 +513,7 @@ F 0 "R10" V 8443 3950 50  0000 C CNN
 F 1 "1k" V 8534 3950 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8720 3859 50  0001 L CNN
 F 3 "~" H 8650 3950 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 8650 3950 50  0001 C CNN "Vendor"
 	1    8650 3950
 	0    1    1    0   
 $EndComp
@@ -512,6 +525,7 @@ F 0 "R8" V 8093 4050 50  0000 C CNN
 F 1 "1k" V 8184 4050 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8370 3959 50  0001 L CNN
 F 3 "~" H 8300 4050 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 8300 4050 50  0001 C CNN "Vendor"
 	1    8300 4050
 	0    1    1    0   
 $EndComp
@@ -521,9 +535,10 @@ L Device:C C5
 U 1 1 5D363DC6
 P 8500 4400
 F 0 "C5" H 8615 4446 50  0000 L CNN
-F 1 "1u" H 8615 4355 50  0000 L CNN
+F 1 "100n" H 8615 4355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8538 4250 50  0001 C CNN
 F 3 "~" H 8500 4400 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 8500 4400 50  0001 C CNN "Vendor"
 	1    8500 4400
 	1    0    0    -1  
 $EndComp
@@ -536,9 +551,10 @@ L Device:C C3
 U 1 1 5D3675BA
 P 8150 4400
 F 0 "C3" H 8265 4446 50  0000 L CNN
-F 1 "1u" H 8265 4355 50  0000 L CNN
+F 1 "100n" H 8265 4355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8188 4250 50  0001 C CNN
 F 3 "~" H 8150 4400 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 8150 4400 50  0001 C CNN "Vendor"
 	1    8150 4400
 	1    0    0    -1  
 $EndComp
@@ -603,6 +619,7 @@ F 0 "C4" H 8565 2096 50  0000 L CNN
 F 1 "100n" H 8565 2005 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8488 1900 50  0001 C CNN
 F 3 "~" H 8450 2050 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 8450 2050 50  0001 C CNN "Vendor"
 	1    8450 2050
 	1    0    0    -1  
 $EndComp
@@ -614,6 +631,7 @@ F 0 "C6" H 8915 2096 50  0000 L CNN
 F 1 "100n" H 8915 2005 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8838 1900 50  0001 C CNN
 F 3 "~" H 8800 2050 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 8800 2050 50  0001 C CNN "Vendor"
 	1    8800 2050
 	1    0    0    -1  
 $EndComp
@@ -682,9 +700,10 @@ L Device:C C8
 U 1 1 5D2EEF83
 P 9200 4400
 F 0 "C8" H 9315 4446 50  0000 L CNN
-F 1 "1u" H 9315 4355 50  0000 L CNN
+F 1 "100n" H 9315 4355 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 9238 4250 50  0001 C CNN
 F 3 "~" H 9200 4400 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 9200 4400 50  0001 C CNN "Vendor"
 	1    9200 4400
 	1    0    0    -1  
 $EndComp
@@ -699,14 +718,15 @@ F 0 "R12" V 9143 3750 50  0000 C CNN
 F 1 "1k" V 9234 3750 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 9420 3659 50  0001 L CNN
 F 3 "~" H 9350 3750 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 9350 3750 50  0001 C CNN "Vendor"
 	1    9350 3750
 	0    1    1    0   
 $EndComp
 $Comp
-L Connector_Generic:Conn_01x03 J4
+L Connector_Generic:Conn_01x03 #J4
 U 1 1 5D47C0CB
 P 10050 5600
-F 0 "J4" H 10130 5596 50  0000 L CNN
+F 0 "#J4" H 10130 5596 50  0000 L CNN
 F 1 "Conn_01x03" H 10130 5551 50  0001 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 10050 5600 50  0001 C CNN
 F 3 "~" H 10050 5600 50  0001 C CNN
@@ -858,6 +878,7 @@ F 0 "IO3" H 8520 3296 50  0000 L CNN
 F 1 "10k" H 8520 3205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8520 3159 50  0001 L CNN
 F 3 "~" H 8450 3250 50  0001 C CNN
+F 4 "603-RT0805FRE0710KL" H 8450 3250 50  0001 C CNN "Vendor"
 	1    8450 3250
 	1    0    0    -1  
 $EndComp
@@ -869,6 +890,7 @@ F 0 "IO2" H 8870 3296 50  0000 L CNN
 F 1 "10k" H 8870 3205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8870 3159 50  0001 L CNN
 F 3 "~" H 8800 3250 50  0001 C CNN
+F 4 "603-RT0805FRE0710KL" H 8800 3250 50  0001 C CNN "Vendor"
 	1    8800 3250
 	1    0    0    -1  
 $EndComp
@@ -880,6 +902,7 @@ F 0 "IO1" H 9220 3296 50  0000 L CNN
 F 1 "10k" H 9220 3205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 9220 3159 50  0001 L CNN
 F 3 "~" H 9150 3250 50  0001 C CNN
+F 4 "603-RT0805FRE0710KL" H 9150 3250 50  0001 C CNN "Vendor"
 	1    9150 3250
 	1    0    0    -1  
 $EndComp
@@ -891,6 +914,7 @@ F 0 "IO0" H 9570 3296 50  0000 L CNN
 F 1 "10k" H 9570 3205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 9570 3159 50  0001 L CNN
 F 3 "~" H 9500 3250 50  0001 C CNN
+F 4 "603-RT0805FRE0710KL" H 9500 3250 50  0001 C CNN "Vendor"
 	1    9500 3250
 	1    0    0    -1  
 $EndComp
@@ -927,6 +951,7 @@ F 0 "Q1" V 3143 1500 50  0000 C CNN
 F 1 "NDP6020" V 3052 1500 50  0000 C CNN
 F 2 "Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown" H 3000 1425 50  0001 L CIN
 F 3 "http://www.irf.com/product-info/datasheets/data/irf9540n.pdf" H 2800 1500 50  0001 L CNN
+F 4 "512-NDP6020P" V 2800 1500 50  0001 C CNN "Vendor"
 	1    2800 1500
 	0    1    -1   0   
 $EndComp
@@ -937,10 +962,10 @@ Wire Wire Line
 Wire Wire Line
 	2700 4750 2900 4750
 $Comp
-L Mechanical:MountingHole H1
+L Mechanical:MountingHole #H1
 U 1 1 5D737650
 P 7850 5250
-F 0 "H1" H 7950 5296 50  0000 L CNN
+F 0 "#H1" H 7950 5296 50  0000 L CNN
 F 1 "MountingHole" H 7950 5205 50  0000 L CNN
 F 2 "myparts:MountingHole_5.3mm__no_courtyard" H 7950 5159 50  0001 L CNN
 F 3 "~" H 7850 5250 50  0001 C CNN
@@ -948,10 +973,10 @@ F 3 "~" H 7850 5250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H2
+L Mechanical:MountingHole #H2
 U 1 1 5D738AF7
 P 7850 5450
-F 0 "H2" H 7950 5496 50  0000 L CNN
+F 0 "#H2" H 7950 5496 50  0000 L CNN
 F 1 "MountingHole" H 7950 5405 50  0000 L CNN
 F 2 "myparts:MountingHole_5.3mm__no_courtyard" H 7850 5450 50  0001 C CNN
 F 3 "~" H 7850 5450 50  0001 C CNN
@@ -959,10 +984,10 @@ F 3 "~" H 7850 5450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H3
+L Mechanical:MountingHole #H3
 U 1 1 5D738DF9
 P 7850 5650
-F 0 "H3" H 7950 5696 50  0000 L CNN
+F 0 "#H3" H 7950 5696 50  0000 L CNN
 F 1 "MountingHole" H 7950 5605 50  0000 L CNN
 F 2 "myparts:MountingHole_5.3mm__no_courtyard" H 7850 5650 50  0001 C CNN
 F 3 "~" H 7850 5650 50  0001 C CNN
@@ -970,10 +995,10 @@ F 3 "~" H 7850 5650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H4
+L Mechanical:MountingHole #H4
 U 1 1 5D7390D4
 P 7850 5850
-F 0 "H4" H 7950 5896 50  0000 L CNN
+F 0 "#H4" H 7950 5896 50  0000 L CNN
 F 1 "MountingHole" H 7950 5805 50  0000 L CNN
 F 2 "myparts:MountingHole_5.3mm__no_courtyard" H 7850 5850 50  0001 C CNN
 F 3 "~" H 7850 5850 50  0001 C CNN
@@ -990,6 +1015,7 @@ F 0 "R9" V 8443 1750 50  0000 C CNN
 F 1 "1k" V 8534 1750 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8720 1659 50  0001 L CNN
 F 3 "~" H 8650 1750 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 8650 1750 50  0001 C CNN "Vendor"
 	1    8650 1750
 	0    1    1    0   
 $EndComp
@@ -1001,6 +1027,7 @@ F 0 "R7" V 8093 1650 50  0000 C CNN
 F 1 "1k" V 8184 1650 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 8370 1559 50  0001 L CNN
 F 3 "~" H 8300 1650 50  0001 C CNN
+F 4 "603-RT0805FRE071KL" H 8300 1650 50  0001 C CNN "Vendor"
 	1    8300 1650
 	0    1    1    0   
 $EndComp
@@ -1030,6 +1057,7 @@ F 0 "R6" H 2370 2846 50  0000 L CNN
 F 1 "90k9 1%" H 2370 2755 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2370 2709 50  0001 L CNN
 F 3 "~" H 2300 2800 50  0001 C CNN
+F 4 "756-PCF0805R-90K9BT1" H 2300 2800 50  0001 C CNN "Vendor"
 	1    2300 2800
 	1    0    0    -1  
 $EndComp
@@ -1052,6 +1080,7 @@ F 0 "R5" H 2370 2446 50  0000 L CNN
 F 1 "100k 1%" H 2370 2355 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2370 2309 50  0001 L CNN
 F 3 "~" H 2300 2400 50  0001 C CNN
+F 4 "284-APC0805B100KN" H 2300 2400 50  0001 C CNN "Vendor"
 	1    2300 2400
 	1    0    0    -1  
 $EndComp
@@ -1074,6 +1103,7 @@ F 0 "R14" H 1070 6946 50  0000 L CNN
 F 1 "200k 1%" H 1070 6855 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1070 6809 50  0001 L CNN
 F 3 "~" H 1000 6900 50  0001 C CNN
+F 4 "756-PCF0805R200KBI" H 1000 6900 50  0001 C CNN "Vendor"
 	1    1000 6900
 	1    0    0    -1  
 $EndComp
@@ -1085,6 +1115,7 @@ F 0 "R13" H 1070 6546 50  0000 L CNN
 F 1 "100k 1%" H 1070 6455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1070 6409 50  0001 L CNN
 F 3 "~" H 1000 6500 50  0001 C CNN
+F 4 "284-APC0805B100KN" H 1000 6500 50  0001 C CNN "Vendor"
 	1    1000 6500
 	1    0    0    -1  
 $EndComp
@@ -1104,6 +1135,7 @@ F 0 "C9" H 1615 6946 50  0000 L CNN
 F 1 "100n" H 1615 6855 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1538 6750 50  0001 C CNN
 F 3 "~" H 1500 6900 50  0001 C CNN
+F 4 "963-UMK212BJ104KG-T" H 1500 6900 50  0001 C CNN "Vendor"
 	1    1500 6900
 	1    0    0    -1  
 $EndComp
