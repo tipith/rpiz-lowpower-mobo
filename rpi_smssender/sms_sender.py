@@ -20,14 +20,15 @@ def phone_context(cls, pin):
     p.shutdown()
 
 
-def finnish_alarm(name, reason, vbatt):
+def finnish_alarm(name, reason, vbatt, temperature):
     reason_map = {
         StartupReason.EXT_TRIGGER1: 'aktiivisesta sisäänmenosta (#1)',
         StartupReason.EXT_TRIGGER2: 'aktiivisesta sisäänmenosta (#2)',
         StartupReason.LOW_BATTERY: 'matalasta akkujännitteestä',
     }
     reason_str = reason_map[reason] if reason in reason_map else 'heränneensä tuntemattomalla syyllä'
-    return f'{name} ilmoittaa {reason_str}. Akkujännite {vbatt:.02f} V.'
+    vbatt_str = f'{vbatt:.02f} V' if vbatt else 'tuntematon'
+    return f'{name} ilmoittaa {reason_str}. Lämpötila {temperature} C. Akkujännite {vbatt_str}.'
 
 
 def run(conf_file):
@@ -41,7 +42,8 @@ def run(conf_file):
             while not p.registered:
                 time.sleep(0.5)
             print(p)
-            msg = finnish_alarm(conf['alarm']['name'], mb.startup_reason, mb.v_batt)
+            print(mb)
+            msg = finnish_alarm(conf['alarm']['name'], mb.startup_reason, mb.v_batt, mb.temperature)
             p.send_sms(conf['phone']['number'], msg)
     finally:
         mb.stop()

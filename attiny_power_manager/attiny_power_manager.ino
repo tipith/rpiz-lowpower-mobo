@@ -1,6 +1,32 @@
 #include <Wire.h>
 #include <util/crc16.h>
 
+uint16_t get_temperature(void)
+{
+  analogReference(INTERNAL1V1);
+  delay(1);
+  ADC0.MUXPOS = ADC_MUXPOS_TEMPSENSE_gc;
+  ADC0.CTRLC &= ~(ADC_INITDLY_gm);
+  ADC0.CTRLD = ADC_INITDLY_DLY256_gc;
+  ADC0.SAMPCTRL = 31;
+  ADC0.CTRLC |= ADC_SAMPCAP_bm;
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while(!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t adc_reading = ADC0.RES;
+  analogReference(INTERNAL2V5);
+
+  int8_t sigrow_offset = SIGROW.TEMPSENSE1;
+  uint8_t sigrow_gain = SIGROW.TEMPSENSE0;
+
+  uint32_t temp = adc_reading - sigrow_offset;
+  temp *= sigrow_gain; // Result might overflow 16 bit variable (10bit+8bit)
+  temp += 0x80; // Add 1/2 to get correct rounding on division below
+  temp >>= 8; // Divide result to get Kelvin
+  uint16_t temperature_in_K = temp;
+
+  return temperature_in_K;
+}
+
 unsigned int append_crc(uint8_t* data, uint32_t len)
 {
 #define CRC_LEN 2
@@ -34,12 +60,13 @@ enum i2c_reg {
   REG_VRPI,
   REG_STARTUP_REASON,
   REG_DEBUG_DATA,
+  REG_TEMPERATURE,
 };
 
 #define I2C_ADDR 8
 char data[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 unsigned int out_len = 8;
-unsigned long vbatt, vrpi;
+unsigned long vbatt, vrpi, temperature;
 
 void requestEvent() 
 {
@@ -71,6 +98,10 @@ void receiveEvent(int howMany)
       strcpy(data, "moi");
       out_len = strlen(data);
       break;
+    case REG_TEMPERATURE:
+      data[out_len++] = temperature & 0xff;
+      data[out_len++] = (temperature >> 8) & 0xff;
+      break;
   }
 
   out_len = append_crc(data, out_len);
@@ -83,15 +114,16 @@ void setup()
   Wire.onReceive(receiveEvent);
   analogReference(INTERNAL2V5);
 
-  pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_PWR_EN, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
 
   digitalWrite(PIN_PWR_EN, LOW);
 }
 
-void loop() {
+void loop() 
+{
   delay(1000);
   vbatt = map(analogRead(PIN_ADC_VBATT), 0, 1024, 0, 5250);
   vrpi = map(analogRead(PIN_ADC_RPI_3V3), 0, 1024, 0, 3750);
+  temperature = get_temperature();
 }

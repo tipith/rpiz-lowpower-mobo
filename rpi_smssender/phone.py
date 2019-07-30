@@ -65,7 +65,7 @@ class DummyPhone:
         print(f'sms to {number}, contents: {text}')
 
     def __str__(self):
-        return 'dummy'
+        return 'dummy phone'
 
 
 class Phone:

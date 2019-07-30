@@ -22,6 +22,7 @@ class I2CRegister(IntEnum):
     REG_RPI_3V3 = 2
     REG_STARTUP_REASON = 3
     REG_DEBUG = 4
+    REG_TEMPERATURE_KELVIN = 5
 
 
 class CommunicationError(Exception):
@@ -55,20 +56,26 @@ class Motherboard:
             crc_func = crcmod.predefined.mkCrcFun('xmodem')
             calculated_crc = crc_func(b[:2])
             if expected_crc != calculated_crc:
-                raise CommunicationError('crc mismatch')
+                raise CommunicationError(f'crc mismatch, reg {reg}')
+            #print(f'{reg:<20}: {val}'')
             return val
         else:
-            raise CommunicationError('unable to communicate')
+            raise CommunicationError(f'unable to communicate, reg {reg}')
 
     @property
     def v_rpi_3v3(self):
         val = self._read_reg(I2CRegister.REG_RPI_3V3)
-        return val / 1e3 if val else None
+        return val / 1e3 if val is not None else None
 
     @property
     def v_batt(self):
         val = self._read_reg(I2CRegister.REG_VBATT)
-        return val / 1e3 if val else None
+        return val / 1e3 if val is not None else None
+
+    @property
+    def temperature(self):
+        val = self._read_reg(I2CRegister.REG_TEMPERATURE_KELVIN)
+        return val - 273 if val is not None else None
 
     @property
     def startup_reason(self) -> StartupReason:
@@ -79,5 +86,5 @@ class Motherboard:
         pass
 
     def __str__(self):
-        return 'Vbatt {} mV, Vrpi {} mV, reason {}'.format(
-            self.v_batt, self.v_rpi_3v3, self.startup_reason)
+        return 'Vbatt {} V, Vrpi {} V, temperature {} C, bootup reason {}'.format(
+            self.v_batt, self.v_rpi_3v3, self.temperature, self.startup_reason)
