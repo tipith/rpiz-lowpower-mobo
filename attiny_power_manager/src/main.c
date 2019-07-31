@@ -1,17 +1,20 @@
+#if 0
+
 /*
  * trap_power_manager.c
  *
  * Created: 30/06/2019 19.12.51
  * Author : pihlstro
- */ 
+ */
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
-#include <avr/interrupt.h>
 
 #include "adc.h"
 #include "gpio.h"
-#include "timer.h"
 #include "statemachine.h"
+#include "timer.h"
+
 
 enum wake_event {
 	EVENT_NONE,
@@ -151,3 +154,4 @@ int main(void)
     }
 }
 
+#endif
