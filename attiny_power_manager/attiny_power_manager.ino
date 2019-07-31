@@ -77,7 +77,6 @@ void requestEvent()
 void receiveEvent(int howMany) 
 {
   int reg = Wire.read();
-  uint16_t crc = 0;
   out_len = 0;
   
   switch (reg)

@@ -1,0 +1,7 @@
+{
+    "board": "megaTinyCore:megaavr:atxy4",
+    "configuration": "chip=1614,clock=20,bodvoltage=1v8,bodmodeactive=disabled,bodmodesleep=disabled,eesave=enable,dacvref=0v55",
+    "port": "COM4",
+    "output": "build",
+    "sketch": "attiny_power_manager\\attiny_power_manager.ino"
+}
