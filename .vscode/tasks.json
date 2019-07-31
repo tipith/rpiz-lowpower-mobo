@@ -11,7 +11,7 @@
                 "X:/Projects/pyupdi/pyupdi.py", 
                 "-d", "tiny1614", 
                 "-c", "COM4", 
-                "-f", "${workspaceRoot}/build/attiny_power_manager.ino.hex"
+                "-f", "${workspaceRoot}/attiny_power_manager/build/attiny_power_manager.ino.hex"
             ],
             "problemMatcher": []
         },
