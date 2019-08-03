@@ -1,17 +1,22 @@
 #include <Wire.h>
 #include <avr/sleep.h>
+#include "src/DebugLogger.h"
 #include "src/PowerManager.h"
+#include "src/debug.h"
 #include "src/pmtypes.h"
 #include "src/utils.h"
 
-char data[32];
-unsigned int out_len = 8;
-unsigned long vbatt, vrpi, temperature;
-PowerManager pm;
+#define I2C_BUFFER_SIZE 32
+#define I2C_PAYLOAD_SIZE (I2C_BUFFER_SIZE - 2)  // 2 bytes crc
+
+static uint8_t out_data[I2C_BUFFER_SIZE];
+static unsigned int out_len = 8;
+static PowerManager* pm;
+static DebugLogger* dbg;
 
 void requestEvent() {
     digitalWrite(PIN_LED, digitalRead(PIN_LED) ? LOW : HIGH);
-    Wire.write(data, out_len);
+    Wire.write(out_data, out_len);
 }
 
 void receiveEvent(int howMany) {
@@ -20,43 +25,45 @@ void receiveEvent(int howMany) {
 
     switch (reg) {
         case REG_VBATT:
-            data[out_len++] = vbatt & 0xff;
-            data[out_len++] = (vbatt >> 8) & 0xff;
+            out_len += pack_u16(out_data, pm->vbatt());
             break;
         case REG_VRPI:
-            data[out_len++] = vrpi & 0xff;
-            data[out_len++] = (vrpi >> 8) & 0xff;
+            out_len += pack_u16(out_data, pm->vrpi());
             break;
         case REG_STARTUP_REASON:
-            data[out_len++] = 2;
-            data[out_len++] = 0;
-            break;
-        case REG_DEBUG_DATA:
-            strcpy(data, "moi");
-            out_len = strlen(data);
+            out_len += pack_u16(out_data, pm->get_reason());
             break;
         case REG_TEMPERATURE:
-            data[out_len++] = temperature & 0xff;
-            data[out_len++] = (temperature >> 8) & 0xff;
+            out_len += pack_u16(out_data, pm->temperature());
             break;
+        case REG_DEBUG_DATA_READ: {
+            memset(out_data, 0, sizeof(out_data));
+            dbg->read(out_data, I2C_PAYLOAD_SIZE);
+            out_len = I2C_PAYLOAD_SIZE;
+            break;
+        }
     }
 
-    out_len = append_crc(data, out_len);
+    out_len = append_crc(out_data, out_len);
 }
 
 void event_ext0(void) {
-    pm.ext_event(IPowerState::EXT_SOURCE_1);
+    pm->ext_event(IPowerState::EXT_SOURCE_1);
 }
 
 void event_ext1(void) {
-    pm.ext_event(IPowerState::EXT_SOURCE_1);
+    pm->ext_event(IPowerState::EXT_SOURCE_2);
 }
 
 void event_rpi(void) {
-    pm.rpi_event();
+    pm->rpi_event();
 }
 
 void setup() {
+    dbg = new DebugLogger(256);
+    debug_set_logger(dbg);
+    pm = new PowerManager();
+
     Wire.begin(I2C_ADDR);
     Wire.onRequest(requestEvent);
     Wire.onReceive(receiveEvent);
@@ -70,11 +77,12 @@ void setup() {
 }
 
 void loop() {
-    vbatt = get_vbatt();
-    vrpi = get_vrpi_3v3();
-    temperature = get_temperature();
-    pm.timer_event();
-    sleep_enable();
-    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-    sleep_cpu();
+    pm->timer_event();
+    delay(2000);
+
+    if (pm->is_powered() == false) {
+        sleep_enable();
+        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+        sleep_cpu();
+    }
 }

@@ -34,10 +34,13 @@ def finnish_alarm(name, reason, vbatt, temperature):
 def run(conf_file):
     conf = get_config(conf_file)
     mb = Motherboard()
+    mb.start()
     b = phone.Battery(vrpi=mb.v_rpi_3v3)
     b.bsi = 82e3
     b.btemp = 50e3
     try:
+        time.sleep(1000)
+
         with phone_context(phone.DummyPhone, conf['phone']['pin']) as p:
             while not p.registered:
                 time.sleep(0.5)

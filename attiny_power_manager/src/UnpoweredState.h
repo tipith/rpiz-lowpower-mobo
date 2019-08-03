@@ -8,4 +8,5 @@ class UnpoweredState : public IPowerState {
     void ext_event(PowerManager& pm, enum IPowerState::ext_source src);
     void rpi_event(PowerManager& pm);
     void timer_event(PowerManager& pm);
+    bool is_powered(void) { return false; }
 };

@@ -9,4 +9,5 @@ class IPowerState {
     virtual void ext_event(PowerManager& pm, enum ext_source src) = 0;
     virtual void rpi_event(PowerManager& pm) = 0;
     virtual void timer_event(PowerManager& pm) = 0;
+    virtual bool is_powered(void) = 0;
 };

@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <Arduino.h>
 #include <util/crc16.h>
+#include "debug.h"
 #include "pmtypes.h"
 
 uint16_t get_temperature(void) {
@@ -63,4 +64,15 @@ uint16_t get_vrpi_3v3(void) {
 
 bool vbatt_is_low(void) {
     return get_vbatt() < 3400;
+}
+
+unsigned int pack_u8(uint8_t* data, uint8_t val) {
+    data[0] = val & 0xff;
+    return sizeof(uint8_t);
+}
+
+unsigned int pack_u16(uint8_t* data, uint16_t val) {
+    data[0] = val & 0xff;
+    data[1] = (val >> 8) & 0xff;
+    return sizeof(uint16_t);
 }

@@ -24,4 +24,7 @@ uint16_t get_vbatt(void);
 uint16_t get_vrpi_3v3(void);
 bool vbatt_is_low(void);
 
+unsigned int pack_u8(uint8_t* data, uint8_t val);
+unsigned int pack_u16(uint8_t* data, uint16_t val);
+
 #endif /* COMMON_H_ */
