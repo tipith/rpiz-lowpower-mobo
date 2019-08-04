@@ -6,6 +6,7 @@ import crcmod
 from enum import IntEnum
 from typing import *
 from threading import Thread, RLock
+from pins import *
 
 
 class StartupReason(IntEnum):
@@ -40,6 +41,7 @@ class Motherboard(Thread):
         self.i2c_lock = RLock()
         self.running = True
         self.remains = ''
+        self.pi.set_mode(PIN_SLEEP_STATUS, pigpio.INPUT)
 
     def run(self):
         while self.running:
@@ -56,36 +58,20 @@ class Motherboard(Thread):
         self.pi.i2c_close(self.i2c)
         self.pi.stop()
 
-    def _read_reg(self, reg: I2CRegister):
+    def _read_reg_word(self, reg: I2CRegister):
         for _ in range(4):
             try:
-                self.ops['total'] += 1
-                return self.__read_reg(reg)
+                payload = self._read_buffer(reg, 2)
+                return struct.unpack('<H', payload)[0]
             except CommunicationError as e:
-                self.ops['fail'] += 1
                 print(f'error: {e}, ops: {self.ops}')
                 time.sleep(1)
 
-    def __read_reg(self, reg: I2CRegister):
-        with self.i2c_lock:
-            (s, b) = self.pi.i2c_read_i2c_block_data(self.i2c, reg, 4)
-        if s >= 0:
-            val, expected_crc = struct.unpack('<HH', b)
-            crc_func = crcmod.predefined.mkCrcFun('xmodem')
-            calculated_crc = crc_func(b[:2])
-            if expected_crc != calculated_crc:
-                raise CommunicationError(f'crc mismatch, reg {reg}, expected {hex(expected_crc)} != calculated {hex(calculated_crc)}')
-            #print(f'{reg:<20}: {val})
-            return val
-        else:
-            raise CommunicationError(f'unable to communicate, reg {reg}')
-
-    def _write_reg(self, reg: I2CRegister, val):
-        with self.i2c_lock:
-            self.pi.i2c_write_byte_data(self.i2c, reg, val)
-
     def _read_buffer(self, reg: I2CRegister, count):
+        if self.sleeping:
+            raise CommunicationError(f'power manager is sleeping')
         with self.i2c_lock:
+            self.ops['total'] += 1
             (s, b) = self.pi.i2c_read_i2c_block_data(self.i2c, reg, count + 2)
         if s >= 0:
             payload = b[:count] 
@@ -94,30 +80,36 @@ class Motherboard(Thread):
             crc_func = crcmod.predefined.mkCrcFun('xmodem')
             calculated_crc = crc_func(payload)
             if expected_crc != calculated_crc:
+                self.ops['fail'] += 1
                 raise CommunicationError(f'crc mismatch, reg {reg}, expected {hex(expected_crc)} != calculated {hex(calculated_crc)}')
             #print(f'{reg:<20}: {payload}')
             return payload
         else:
-            raise CommunicationError(f'unable to communicate, reg {reg}')
-    
+            self.ops['fail'] += 1
+            raise CommunicationError(f'unable to communicate, reg {reg}, status {s}')
+
+    @property
+    def sleeping(self):
+        return self.pi.read(PIN_SLEEP_STATUS) == 1
+
     @property
     def v_rpi_3v3(self):
-        val = self._read_reg(I2CRegister.REG_RPI_3V3)
+        val = self._read_reg_word(I2CRegister.REG_RPI_3V3)
         return val / 1e3 if val is not None else None
 
     @property
     def v_batt(self):
-        val = self._read_reg(I2CRegister.REG_VBATT)
+        val = self._read_reg_word(I2CRegister.REG_VBATT)
         return val / 1e3 if val is not None else None
 
     @property
     def temperature(self):
-        val = self._read_reg(I2CRegister.REG_TEMPERATURE_KELVIN)
+        val = self._read_reg_word(I2CRegister.REG_TEMPERATURE_KELVIN)
         return val - 273 if val is not None else None
 
     @property
     def startup_reason(self) -> StartupReason:
-        val = self._read_reg(I2CRegister.REG_STARTUP_REASON)
+        val = self._read_reg_word(I2CRegister.REG_STARTUP_REASON)
         return StartupReason(val) if StartupReason.has_value(val) else StartupReason.UNKNOWN
 
     @property
@@ -125,7 +117,6 @@ class Motherboard(Thread):
         MAX_DBG_PAYLOAD = 30
         ret = ''
         while True:
-            
             buf = self._read_buffer(I2CRegister.REG_DEBUG_DATA_READ, MAX_DBG_PAYLOAD)
             if buf is not None and len(buf) > 0:
                 ret += buf.decode('ascii', errors='ignore')

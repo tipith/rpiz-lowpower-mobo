@@ -4,12 +4,13 @@
 #include "pmtypes.h"
 #include "utils.h"
 
-class PoweredState : public IPowerState {
+class PoweredState : public IPowerState
+{
    public:
     PoweredState();
-    void ext_event(PowerManager& pm, enum IPowerState::ext_source src);
-    void rpi_event(PowerManager& pm);
-    void timer_event(PowerManager& pm);
+    void ext(PowerManager& pm, enum IPowerState::ext_source src);
+    void rpi(PowerManager& pm);
+    void timer(PowerManager& pm);
     bool is_powered(void) { return true; }
 
    private:

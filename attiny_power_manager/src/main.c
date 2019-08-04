@@ -16,6 +16,9 @@
 #include "timer.h"
 
 
+
+
+
 enum wake_event {
 	EVENT_NONE,
 	EVENT_EXT1,
@@ -47,7 +50,7 @@ static void _on_ext_trigger2(void)
 	cli();
 }
 
-static void _on_rpi_event(void)
+static void _on_rpi(void)
 {
 	rpi_occured = true;
 }
@@ -110,7 +113,7 @@ int main(void)
 	gpio_init();
 	gpio_subscribe(PIN_IO0, _on_ext_trigger1);
 	gpio_subscribe(PIN_IO1, _on_ext_trigger2);
-	gpio_subscribe(PIN_RPI_EVENT, _on_rpi_event);
+	gpio_subscribe(PIN_RPI_EVENT, _on_rpi);
 
 	
 	adc_init();
@@ -131,19 +134,19 @@ int main(void)
 		switch (inspect_and_clear_event_source())
 		{
 			case EVENT_EXT1:
-				statemachine_ext_event(EXT_SOURCE_1);
+				statemachine_ext(EXT_SOURCE_1);
 				//blink(1);
 				break;
 			case EVENT_EXT2:
-				statemachine_ext_event(EXT_SOURCE_2);
+				statemachine_ext(EXT_SOURCE_2);
 				//blink(2);
 				break;
 			case EVENT_RPI:
-				statemachine_rpi_event();
+				statemachine_rpi();
 				blink(3);
 				break;
 			case EVENT_TIMER:
-				statemachine_timer_event();
+				statemachine_timer();
 				blink(4);
 				break;
 			default:

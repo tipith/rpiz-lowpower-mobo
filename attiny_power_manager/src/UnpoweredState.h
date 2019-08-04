@@ -2,11 +2,12 @@
 
 #include "IPowerState.h"
 
-class UnpoweredState : public IPowerState {
+class UnpoweredState : public IPowerState
+{
    public:
     UnpoweredState();
-    void ext_event(PowerManager& pm, enum IPowerState::ext_source src);
-    void rpi_event(PowerManager& pm);
-    void timer_event(PowerManager& pm);
+    void ext(PowerManager& pm, enum IPowerState::ext_source src);
+    void rpi(PowerManager& pm);
+    void timer(PowerManager& pm);
     bool is_powered(void) { return false; }
 };

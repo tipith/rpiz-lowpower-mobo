@@ -7,66 +7,96 @@
 #include "debug.h"
 #include "pmtypes.h"
 
-class PowerManager {
+class PowerManager
+{
    public:
-    enum PowerState { ON, OFF };
-    enum WakeupReason { RPI_WAKEUP_EXT_TRIGGER, RPI_WAKEUP_LOW_BATTERY };
+    enum PowerState
+    {
+        ON,
+        OFF
+    };
+    enum WakeupReason
+    {
+        RPI_WAKEUP_EXT_TRIGGER,
+        RPI_WAKEUP_LOW_BATTERY
+    };
 
-    PowerManager() {
+    PowerManager()
+    {
         _state = new UnpoweredState();
         _next_allowed_poweron = millis() + 10 * 1000;
-        DBG_PRINTF("_next_allowed_poweron = %lu\n", _next_allowed_poweron);
     }
 
     bool is_powered(void) { return _state->is_powered(); }
 
-    void ext_event(enum IPowerState::ext_source src) {
-        _state->ext_event(*this, src);
-    }
+    void ext(enum IPowerState::ext_source src) { _state->ext(*this, src); }
 
-    void rpi_event(void) { _state->rpi_event(*this); }
+    void rpi(void) { _state->rpi(*this); }
 
-    void timer_event(void) {
+    void timer(void)
+    {
+        blink(5);
         static unsigned long next_trace_allowed = 10000;
-        _temperature = get_temperature();
-        _vbatt = get_vbatt();
-        _vrpi = get_vrpi_3v3();
-        if (next_trace_allowed < millis()) {
-            DBG_PRINTF("vb %lu mV, vr %lu mV, %lu C\n", _vbatt, _vrpi,
-                       _temperature - 273);
-            next_trace_allowed = millis() + 30 * 1000;
+        static unsigned long next_monitor_allowed = 10000;
+
+        /* limit the amount of work in unpowered state to conserve energy */
+        if (next_monitor_allowed < millis() || is_powered())
+        {
+            next_monitor_allowed = millis() + 10000;
+            blink(100);
+            _vbatt = get_vbatt();
+            if (is_powered())
+            {
+                _temperature = get_temperature();
+                _vrpi = get_vrpi_3v3();
+                if (next_trace_allowed < millis())
+                {
+                    DBG_EXT_PRINTF("vb %lu mV, vr %lu mV, %lu C\n", _vbatt, _vrpi, _temperature - 273);
+                    next_trace_allowed = millis() + 30 * 1000;
+                }
+            }
+            _state->timer(*this);
         }
-        _state->timer_event(*this);
     }
 
-    setState(enum PowerState state) {
-        switch (state) {
+    setState(enum PowerState state)
+    {
+        switch (state)
+        {
             case ON:
-                if (_next_allowed_poweron < millis()) {
+                if (_next_allowed_poweron < millis())
+                {
+                    cli();
                     delete _state;
                     _state = new PoweredState();
+                    sei();
                     _next_allowed_poweron = millis() + RPI_POWERON_PROHIBIT_MS;
-                } else {
-                    DBG_PRINTF("next allowed power on in %u ms\n",
-                               _next_allowed_poweron - millis());
+                }
+                else
+                {
+                    DBG_EXT_PRINTF("next on, %u ms\n", _next_allowed_poweron - millis());
                 }
                 break;
             case OFF:
+                cli();
                 delete _state;
                 _state = new UnpoweredState();
+                sei();
                 break;
             default:
                 break;
         }
     }
 
-    enum WakeupReason get_reason(void) {
-        DBG_PRINTF("reason = %u\n", _reason);
+    enum WakeupReason get_reason(void)
+    {
+        DBG_EXT_PRINTF("%u\n", _reason);
         return _reason;
     }
 
-    void set_reason(enum WakeupReason reason) {
-        DBG_PRINTF("reason = %u\n", reason);
+    void set_reason(enum WakeupReason reason)
+    {
+        DBG_EXT_PRINTF("%u\n", reason);
         _reason = reason;
     }
 

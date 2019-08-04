@@ -3,8 +3,7 @@ import datetime, time
 import gammu
 import pigpio
 
-PIN_PWM0 = 12  # header 32
-PIN_PWM1 = 13  # header 33
+from pins import *
 
 class Battery:
 
