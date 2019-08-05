@@ -35,12 +35,15 @@ def run(conf_file):
     conf = get_config(conf_file)
     mb = Motherboard()
     mb.start()
-    b = phone.Battery(vrpi=mb.v_rpi_3v3)
-    b.bsi = 82e3
-    b.btemp = 50e3
     try:
+        for _ in range(1000):
+            time.sleep(15)
+            mb.request_shutdown(10)
         time.sleep(1000)
 
+        b = phone.Battery(vrpi=mb.v_rpi_3v3)
+        b.bsi = 82e3
+        b.btemp = 50e3
         with phone_context(phone.DummyPhone, conf['phone']['pin']) as p:
             while not p.registered:
                 time.sleep(0.5)

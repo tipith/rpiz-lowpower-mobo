@@ -2,11 +2,11 @@
 
 #define I2C_ADDR 8
 
-#define RPI_SHUTDOWN_TIMEOUT_MS 10000
-#define RPI_SHUTDOWN_DELAY_MS 20000
-#define RPI_POWERON_PROHIBIT_MS 30000
+#define RPI_SHUTDOWN_TIMEOUT_MS 300000
+#define RPI_POWERON_PROHIBIT_MS 10000
 
-enum iopin {
+enum iopin
+{
     PIN_IO0 = 9,
     PIN_IO1 = 2,
     PIN_IO2 = 10,
@@ -20,10 +20,12 @@ enum iopin {
     PIN_ADC_RPI_3V3 = 0,
 };
 
-enum i2c_reg {
+enum i2c_reg
+{
     REG_VBATT = 1,
     REG_VRPI,
     REG_STARTUP_REASON,
     REG_TEMPERATURE,
     REG_DEBUG_DATA_READ,
+    REG_REQUEST_SHUTDOWN
 };

@@ -12,10 +12,11 @@ PoweredState::PoweredState(void)
 
 void PoweredState::ext(PowerManager& pm, enum IPowerState::ext_source src) {}
 
-void PoweredState::rpi(PowerManager& pm)
+void PoweredState::request_shutdown(PowerManager& pm, unsigned long delay_sec)
 {
-    _next_poweroff_ms = millis() + RPI_SHUTDOWN_DELAY_MS;
-    DBG_EXT_PRINTF("\n");
+    unsigned long candidate = millis() + delay_sec * 1000;
+    if (candidate < _next_poweroff_ms)
+        _next_poweroff_ms = candidate;
 }
 
 void PoweredState::timer(PowerManager& pm)

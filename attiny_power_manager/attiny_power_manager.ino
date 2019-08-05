@@ -18,8 +18,8 @@ static DebugLogger* dbg;
 
 static void requestEvent()
 {
-    // digitalWrite(PIN_LED, digitalRead(PIN_LED) ? LOW : HIGH);
-    Wire.write(out_data, out_len);
+    if (out_len)
+        Wire.write(out_data, out_len);
 }
 
 static void receiveEvent(int howMany)
@@ -42,15 +42,23 @@ static void receiveEvent(int howMany)
             out_len += pack_u16(out_data, pm->temperature());
             break;
         case REG_DEBUG_DATA_READ:
-        {
             memset(out_data, 0, sizeof(out_data));
             dbg->read(out_data, I2C_PAYLOAD_SIZE);
             out_len = I2C_PAYLOAD_SIZE;
             break;
-        }
+        case REG_REQUEST_SHUTDOWN:
+            if (Wire.available() == 4)
+            {
+                uint16_t secs = Wire.read() | (Wire.read() << 8);
+                uint16_t crc = Wire.read() | (Wire.read() << 8);
+                if (calculate_crc16((uint8_t*)&secs, 2) == crc)
+                    pm->request_shutdown(secs);
+            }
+            break;
     }
 
-    out_len = append_crc(out_data, out_len);
+    if (out_len)
+        out_len = append_crc16(out_data, out_len);
 }
 
 static void event_ext0(void)
@@ -61,11 +69,6 @@ static void event_ext0(void)
 static void event_ext1(void)
 {
     pm->ext(IPowerState::EXT_SOURCE_2);
-}
-
-static void event_rpi(void)
-{
-    pm->rpi();
 }
 
 static void sleep_if_needed(void)
@@ -104,7 +107,6 @@ ISR(RTC_PIT_vect)
 
 void setup()
 {
-    // attachInterrupt(digitalPinToInterrupt(PIN_RPI_EVENT), event_rpi, FALLING);
     pinMode(PIN_PWR_EN, OUTPUT);
     pinMode(PIN_LED, OUTPUT);
     // indication to rpi if attiny is sleeping, should preent i2c polling
@@ -114,7 +116,7 @@ void setup()
     debug_set_logger(dbg);
     pm = new PowerManager();
 
-    Wire.begin(I2C_ADDR);
+    // TWI will be enabled on power on to reduce current consumption
     Wire.onRequest(requestEvent);
     Wire.onReceive(receiveEvent);
 

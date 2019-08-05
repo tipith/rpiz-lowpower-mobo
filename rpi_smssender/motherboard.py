@@ -26,7 +26,10 @@ class I2CRegister(IntEnum):
     REG_STARTUP_REASON = 3
     REG_TEMPERATURE_KELVIN = 4
     REG_DEBUG_DATA_READ = 5
+    REG_REQUEST_SHUTDOWN = 6
 
+class SleepingException(Exception):
+    pass
 
 class CommunicationError(Exception):
     pass
@@ -49,9 +52,11 @@ class Motherboard(Thread):
                 dbg_lines = self.debug
                 for line in dbg_lines:
                     print(line)
-            except Exception as e:
+            except SleepingException:
+                pass
+            except CommunicationError as e:
                 print(e)
-            time.sleep(0.5)
+            time.sleep(0.01)
 
     def stop(self):
         self.running = False
@@ -67,9 +72,18 @@ class Motherboard(Thread):
                 print(f'error: {e}, ops: {self.ops}')
                 time.sleep(1)
 
+    def _write_buffer(self, reg: I2CRegister, data):
+        if self.sleeping:
+            raise SleepingException(f'power manager is sleeping')
+        with self.i2c_lock:
+            crc_func = crcmod.predefined.mkCrcFun('xmodem')
+            data += struct.pack('<H', crc_func(data))
+            #print(f'{str(reg):<20}: {data}')
+            self.pi.i2c_write_i2c_block_data(self.i2c, reg, data)
+
     def _read_buffer(self, reg: I2CRegister, count):
         if self.sleeping:
-            raise CommunicationError(f'power manager is sleeping')
+            raise SleepingException(f'power manager is sleeping')
         with self.i2c_lock:
             self.ops['total'] += 1
             (s, b) = self.pi.i2c_read_i2c_block_data(self.i2c, reg, count + 2)
@@ -81,8 +95,8 @@ class Motherboard(Thread):
             calculated_crc = crc_func(payload)
             if expected_crc != calculated_crc:
                 self.ops['fail'] += 1
-                raise CommunicationError(f'crc mismatch, reg {reg}, expected {hex(expected_crc)} != calculated {hex(calculated_crc)}')
-            #print(f'{reg:<20}: {payload}')
+                raise CommunicationError(f'crc mismatch, reg {reg}, expected {hex(expected_crc)} != calculated {hex(calculated_crc)}\n - data: {b}')
+            #print(f'{str(reg):<20}: {payload}')
             return payload
         else:
             self.ops['fail'] += 1
@@ -120,7 +134,8 @@ class Motherboard(Thread):
             buf = self._read_buffer(I2CRegister.REG_DEBUG_DATA_READ, MAX_DBG_PAYLOAD)
             if buf is not None and len(buf) > 0:
                 ret += buf.decode('ascii', errors='ignore')
-            if all(map(bool, buf)):  # retry if payload is filled
+            if all(map(bool, ret)) and len(ret) < 128:  # retry if payload is filled
+                time.sleep(0.01)
                 continue
             break
         previous = self.remains
@@ -130,6 +145,19 @@ class Motherboard(Thread):
         else:
             self.remains = previous + self.remains  # one long line still continues
         return full_rows
+
+    def request_shutdown(self, secs):
+        print(f'request shutdown in {secs}')
+        for _ in range(4):
+            try:
+                packed = struct.pack('<H', secs)
+                self._write_buffer(I2CRegister.REG_REQUEST_SHUTDOWN, packed)
+                return
+            except CommunicationError as e:
+                print(f'error: {e}')
+            except SleepingException:
+                pass
+            time.sleep(1)
 
     def send_event_to_power_manager(self):
         pass

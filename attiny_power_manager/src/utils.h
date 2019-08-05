@@ -16,9 +16,12 @@
 #define arraylen(ary) (sizeof(ary) / sizeof(ary[0]))
 
 uint16_t get_temperature(void);
-unsigned int append_crc(uint8_t* data, uint32_t len);
+unsigned int calculate_crc16(uint8_t* data, uint32_t len);
+unsigned int append_crc16(uint8_t* data, uint32_t len);
 
 void blink(unsigned long ms);
+void blinkn(unsigned long ms, unsigned int n);
+
 void power_enable(void);
 void power_disable(void);
 uint16_t get_vbatt(void);

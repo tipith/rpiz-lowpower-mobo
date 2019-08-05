@@ -24,14 +24,14 @@ class PowerManager
     PowerManager()
     {
         _state = new UnpoweredState();
-        _next_allowed_poweron = millis() + 10 * 1000;
+        _next_allowed_poweron = millis() + 1000;
     }
 
     bool is_powered(void) { return _state->is_powered(); }
 
     void ext(enum IPowerState::ext_source src) { _state->ext(*this, src); }
 
-    void rpi(void) { _state->rpi(*this); }
+    void request_shutdown(unsigned long delay_sec) { _state->request_shutdown(*this, delay_sec); }
 
     void timer(void)
     {

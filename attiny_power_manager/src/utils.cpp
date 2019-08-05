@@ -32,18 +32,20 @@ uint16_t get_temperature(void)
     return temperature_in_K;
 }
 
-unsigned int append_crc(uint8_t* data, uint32_t len)
+unsigned int calculate_crc16(uint8_t* data, uint32_t len)
 {
-#define CRC_LEN 2
     uint16_t crc = 0;
     for (unsigned int i = 0; i < len; ++i)
     {
         crc = _crc_xmodem_update(crc, data[i]);
     }
+    return crc;
+}
 
-    data[len] = crc & 0xff;
-    data[len + 1] = (crc >> 8) & 0xff;
-    return len + CRC_LEN;
+unsigned int append_crc16(uint8_t* data, uint32_t len)
+{
+    uint16_t crc = calculate_crc16(data, len);
+    return len + pack_u16(&data[len], crc);
 }
 
 void power_enable(void)
@@ -56,6 +58,7 @@ void power_enable(void)
 
 void power_disable(void)
 {
+    Wire.end();
     digitalWrite(PIN_LED, LOW);
     digitalWrite(PIN_PWR_EN, HIGH);
     digitalWrite(PIN_RPI_EVENT, HIGH);
@@ -78,6 +81,17 @@ void blink(unsigned long ms)
     digitalWrite(PIN_LED, CHANGE);
     delay(ms);
     digitalWrite(PIN_LED, CHANGE);
+}
+
+void blinkn(unsigned long ms, unsigned int n)
+{
+    for (unsigned int i = 0; i < n; ++i)
+    {
+        digitalWrite(PIN_LED, CHANGE);
+        delay(ms);
+        digitalWrite(PIN_LED, CHANGE);
+        delay(ms);
+    }
 }
 
 bool vbatt_is_low(void)

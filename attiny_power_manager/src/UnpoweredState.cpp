@@ -17,7 +17,7 @@ void UnpoweredState::ext(PowerManager& pm, enum IPowerState::ext_source src)
     pm.set_reason(PowerManager::RPI_WAKEUP_EXT_TRIGGER);
 }
 
-void UnpoweredState::rpi(PowerManager& pm) {}
+void UnpoweredState::request_shutdown(PowerManager& pm, unsigned long delay_sec) {}
 
 void UnpoweredState::timer(PowerManager& pm)
 {

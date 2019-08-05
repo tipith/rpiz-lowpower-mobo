@@ -12,7 +12,7 @@ class IPowerState
     };
 
     virtual void ext(PowerManager& pm, enum ext_source src) = 0;
-    virtual void rpi(PowerManager& pm) = 0;
+    virtual void request_shutdown(PowerManager& pm, unsigned long delay_sec) = 0;
     virtual void timer(PowerManager& pm) = 0;
     virtual bool is_powered(void) = 0;
 };
