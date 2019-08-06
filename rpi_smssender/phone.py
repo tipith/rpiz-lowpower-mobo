@@ -1,9 +1,11 @@
-import datetime, time
+import datetime, time, logging
 
 import gammu
 import pigpio
 
 from pins import *
+
+logger = logging.getLogger('phone')
 
 class Battery:
 
@@ -30,7 +32,7 @@ class Battery:
     def bsi(self, res_value):
         self.bsi_resistance = res_value
         dc, vtarget = self._calc_dc(self.bsi)
-        print(f'bsi {self.bsi} ohm ({dc / 1e6:.2f}, {vtarget:.2f} V)')
+        logger.info(f'bsi {self.bsi} ohm ({dc / 1e6:.2f}, {vtarget:.2f} V)')
         self.pi.hardware_PWM(self.pin_bsi, Battery.PWM_FREQ, dc)
 
     @property
@@ -41,7 +43,7 @@ class Battery:
     def btemp(self, res_value):
         self.btemp_resistance = res_value
         dc, vtarget = self._calc_dc(self.btemp)
-        print(f'btemp {self.btemp} ohm ({dc / 1e6:.2f}, {vtarget:.2f} V)')
+        logger.info(f'btemp {self.btemp} ohm ({dc / 1e6:.2f}, {vtarget:.2f} V)')
         self.pi.hardware_PWM(self.pin_btemp, Battery.PWM_FREQ, dc)
 
 class DummyPhone:
@@ -61,7 +63,7 @@ class DummyPhone:
         return True
 
     def send_sms(self, number, text):
-        print(f'sms to {number}, contents: {text}')
+        logger.info(f'sms to {number}, contents: {text}')
 
     def __str__(self):
         return 'dummy phone'
@@ -78,7 +80,7 @@ class Phone:
 
     def _startup(self):
         self.sm.Init()
-        print('hw={}, imei={}, manuf={}, charge={}'.format(
+        logger.info('hw={}, imei={}, manuf={}, charge={}'.format(
             self.sm.GetHardware(), self.sm.GetIMEI(),
             self.sm.GetManufacturer(), self.sm.GetBatteryCharge()['BatteryPercent']))
         self.sm.PressKey(Key='p', Press=True)
@@ -95,12 +97,12 @@ class Phone:
         for _ in range(5):
             try:
                 if self.sm.GetSecurityStatus() == 'PIN':
-                    print('security - status={}, pin={}'.format(self.sm.GetSecurityStatus(), pin))
+                    logger.info('security - status={}, pin={}'.format(self.sm.GetSecurityStatus(), pin))
                     self.sm.EnterSecurityCode('PIN', pin)
                 self._ready = True
                 break
             except gammu.ERR_TIMEOUT:
-                print('pin failed')
+                logger.warn('pin failed')
                 time.sleep(3.0)
 
     def shutdown(self):

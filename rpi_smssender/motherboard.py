@@ -3,11 +3,14 @@ import struct
 import sys
 import pigpio
 import crcmod
+import logging
 from enum import IntEnum
 from typing import *
 from threading import Thread, RLock
 from pins import *
 
+
+logger = logging.getLogger('mobo')
 
 class StartupReason(IntEnum):
     EXT_TRIGGER1 = 1
@@ -51,15 +54,16 @@ class Motherboard(Thread):
             try:
                 dbg_lines = self.debug
                 for line in dbg_lines:
-                    print(line)
+                    logger.info(line)
             except SleepingException:
                 pass
             except CommunicationError as e:
-                print(e)
+                logger.warn(e)
             time.sleep(0.01)
 
     def stop(self):
         self.running = False
+        self.join(1)
         self.pi.i2c_close(self.i2c)
         self.pi.stop()
 
@@ -69,8 +73,10 @@ class Motherboard(Thread):
                 payload = self._read_buffer(reg, 2)
                 return struct.unpack('<H', payload)[0]
             except CommunicationError as e:
-                print(f'error: {e}, ops: {self.ops}')
+                logger.warn(f'error: {e}, ops: {self.ops}')
                 time.sleep(1)
+            except SleepingException:
+                break
 
     def _write_buffer(self, reg: I2CRegister, data):
         if self.sleeping:
@@ -78,7 +84,7 @@ class Motherboard(Thread):
         with self.i2c_lock:
             crc_func = crcmod.predefined.mkCrcFun('xmodem')
             data += struct.pack('<H', crc_func(data))
-            #print(f'{str(reg):<20}: {data}')
+            logger.debug(f'{str(reg):<20}: {data}')
             self.pi.i2c_write_i2c_block_data(self.i2c, reg, data)
 
     def _read_buffer(self, reg: I2CRegister, count):
@@ -96,7 +102,7 @@ class Motherboard(Thread):
             if expected_crc != calculated_crc:
                 self.ops['fail'] += 1
                 raise CommunicationError(f'crc mismatch, reg {reg}, expected {hex(expected_crc)} != calculated {hex(calculated_crc)}\n - data: {b}')
-            #print(f'{str(reg):<20}: {payload}')
+            logger.debug(f'{str(reg):<20}: {payload}')
             return payload
         else:
             self.ops['fail'] += 1
@@ -147,14 +153,14 @@ class Motherboard(Thread):
         return full_rows
 
     def request_shutdown(self, secs):
-        print(f'request shutdown in {secs}')
+        logger.info(f'request shutdown in {secs}')
         for _ in range(4):
             try:
                 packed = struct.pack('<H', secs)
                 self._write_buffer(I2CRegister.REG_REQUEST_SHUTDOWN, packed)
                 return
             except CommunicationError as e:
-                print(f'error: {e}')
+                logger.warn(f'error: {e}')
             except SleepingException:
                 pass
             time.sleep(1)

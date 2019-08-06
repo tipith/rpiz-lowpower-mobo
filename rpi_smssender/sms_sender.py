@@ -1,15 +1,19 @@
 
 import phone
 import time
+import logging
 import configparser
 from contextlib import contextmanager
 from motherboard import Motherboard, StartupReason
+from logs import setup_logging
+
+logger = logging.getLogger('main')
 
 
 def get_config(conf_file):
     conf = configparser.ConfigParser()
     conf.read(conf_file)
-    print({section: dict(conf[section]) for section in conf.sections()})
+    logger.info({section: dict(conf[section]) for section in conf.sections()})
     return conf
 
 
@@ -32,26 +36,23 @@ def finnish_alarm(name, reason, vbatt, temperature):
 
 
 def run(conf_file):
+    setup_logging('logs')
     conf = get_config(conf_file)
     mb = Motherboard()
     mb.start()
     try:
-        for _ in range(1000):
-            time.sleep(15)
-            mb.request_shutdown(10)
-        time.sleep(1000)
-
         b = phone.Battery(vrpi=mb.v_rpi_3v3)
         b.bsi = 82e3
         b.btemp = 50e3
-        with phone_context(phone.DummyPhone, conf['phone']['pin']) as p:
+        with phone_context(phone.Phone, conf['phone']['pin']) as p:
             while not p.registered:
                 time.sleep(0.5)
-            print(p)
-            print(mb)
+            logger.info(p)
+            logger.info(mb)
             msg = finnish_alarm(conf['alarm']['name'], mb.startup_reason, mb.v_batt, mb.temperature)
             p.send_sms(conf['phone']['number'], msg)
     finally:
+        mb.request_shutdown(10)
         mb.stop()
 
 
